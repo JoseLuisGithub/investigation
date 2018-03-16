@@ -1,0 +1,48 @@
+﻿@{
+    ViewBag.Title = "Notification";
+}
+<h2>@ViewBag.Title.</h2>
+
+@section Scripts{
+  <div style="margin-top: 100px;">
+    <!-- This button will trigger the time consuming operation -->
+    <input type="button" id="mybutton"
+           value="Call a time consuming server side operation" />
+  </div>
+    <script type="text/javascript">
+
+            $(function () {
+                // Initialize the connection to the server
+                var realtimeNotifier = $.connection.notificationHub;
+
+                // Preparing a client side function
+                // called sendMessage that will be called from the server side
+                realtimeNotifier.client.sendMessage = function (message) {
+                    showOrUpdateSuccessMessage(message, false);
+                };
+
+                // Establish the connection to the server. When done, sets the click of the button
+                $.connection.hub.start().done(function () {
+                    realtimeNotifier.server.doLongOperation();
+                    //$('#mybutton').click(function () {
+                    //    // When the button is clicked,
+                    //    // call the method DoLongOperation defined in the Hub
+                    //    //realtimeNotifier.server.doLongOperation();
+                    //});
+                });
+            });
+    </script>
+    <script type="text/javascript">
+            // Helper code that updates the noty notification bar
+            var n;
+            function showOrUpdateSuccessMessage(message, timeout) {
+                console.log(message);
+                if (n == null) {
+                    n = noty({ text: message, type: 'success', timeout: timeout, maxVisible: 1 });
+                }
+                else {
+                    n.setText(message);
+                }
+            }
+    </script>
+}
